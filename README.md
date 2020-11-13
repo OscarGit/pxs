@@ -1,1 +1,5 @@
 # pxs
+
+## Requirements
+
+-   yarn
