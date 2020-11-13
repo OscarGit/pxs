@@ -1,0 +1,15 @@
+{
+    "name": "pxs",
+    "version": "0.0.1",
+    "description": "Pixelsorter web app",
+    "main": "index.js",
+    "repository": "https://github.com/OscarGit/pxs.git",
+    "author": "Oscar Persson <oscar.persson1993@gmail.com>",
+    "license": "MIT",
+    "private": false,
+    "prettier": {
+        "tabWidth": 4,
+        "singleQuote": true,
+        "printWidth": 100
+    }
+}
