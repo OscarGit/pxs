@@ -1,0 +1,53 @@
+* {
+    box-sizing: border-box;
+}
+
+@mixin fill {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+@mixin flex-container {
+    @include fill;
+    display: flex;
+}
+
+html,
+body,
+#root {
+    @include fill;
+}
+
+#root {
+    background-color: #444;
+}
+
+.main-container {
+    @include flex-container;
+}
+
+.image-view-container {
+    @include flex-container;
+}
+
+.load-btn-container {
+    @include flex-container;
+    justify-content: center;
+    align-items: center;
+}
+#load-btn {
+    outline: 0;
+    border: 0;
+    border-radius: 0;
+
+    padding: 0.5rem 2rem;
+    line-height: 4rem;
+    font-size: 2rem;
+}
+
+canvas {
+    flex-grow: 1;
+    border: 1px solid white;
+}

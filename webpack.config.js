@@ -2,6 +2,7 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const outputPath = path.resolve(__dirname, 'dist');
+const srcPath = path.resolve(__dirname, 'src');
 
 module.exports = {
     mode: 'development',
@@ -14,8 +15,14 @@ module.exports = {
         rules: [
             {
                 test: /\.tsx?$/,
+                include: srcPath,
                 use: 'ts-loader',
                 exclude: /node_modules/,
+            },
+            {
+                test: /\.scss$/,
+                include: srcPath,
+                use: ['style-loader', 'css-loader', 'sass-loader'],
             },
         ],
     },

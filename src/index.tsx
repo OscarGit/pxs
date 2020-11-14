@@ -1,5 +1,5 @@
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { App } from './app/app';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import MainWindow from './app/MainWindow';
 
-ReactDOM.render(<App text="Someone" />, document.getElementById('root'));
+ReactDOM.render(<MainWindow />, document.getElementById('root'));
