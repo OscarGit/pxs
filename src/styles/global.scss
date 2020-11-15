@@ -1,38 +1,47 @@
+$primary-color: #cf6766;
+$secondary-color: #30415d;
+$light-color: #8eaebd;
+$dark-color: #031424;
+
 * {
     box-sizing: border-box;
 }
 
-@mixin fill {
+@mixin fill-space {
     width: 100%;
     height: 100%;
     margin: 0;
-    padding: 0;
 }
 
 @mixin flex-container {
-    @include fill;
+    @include fill-space;
     display: flex;
+}
+
+@font-face {
+    font-family: 'Forced Square';
+    src: url(../assets/forced_square.ttf);
+}
+
+.psx-font {
+    font-family: 'Forced Square';
 }
 
 html,
 body,
 #root {
-    @include fill;
+    @include fill-space;
 }
 
 #root {
-    background-color: #444;
+    background-color: $secondary-color;
 }
 
-.main-container {
+.container {
     @include flex-container;
 }
 
-.image-view-container {
-    @include flex-container;
-}
-
-.load-btn-container {
+#load-btn-container {
     @include flex-container;
     justify-content: center;
     align-items: center;
@@ -45,9 +54,20 @@ body,
     padding: 0.5rem 2rem;
     line-height: 4rem;
     font-size: 2rem;
+
+    background-color: $primary-color;
+    color: $dark-color;
+
+    &:hover {
+        background-color: $dark-color;
+        color: $primary-color;
+    }
+}
+
+#file-input {
+    display: none;
 }
 
 canvas {
     flex-grow: 1;
-    border: 1px solid white;
 }

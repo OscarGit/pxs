@@ -3,6 +3,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const outputPath = path.resolve(__dirname, 'dist');
 const srcPath = path.resolve(__dirname, 'src');
+const assetsPath = path.resolve(__dirname, 'src', 'assets');
 
 module.exports = {
     mode: 'development',
@@ -20,9 +21,19 @@ module.exports = {
                 exclude: /node_modules/,
             },
             {
-                test: /\.scss$/,
+                test: /\.(s[ac]|c)ss$/,
                 include: srcPath,
                 use: ['style-loader', 'css-loader', 'sass-loader'],
+            },
+            {
+                test: /\.ttf$/,
+                include: assetsPath,
+                use: [
+                    {
+                        loader: 'file-loader',
+                        options: { name: '[name].[ext]', outputPath: 'fonts/' },
+                    },
+                ],
             },
         ],
     },
@@ -31,8 +42,11 @@ module.exports = {
     },
     plugins: [
         new HtmlWebpackPlugin({
-            template: './src/index.html',
-            favicon: './src/favicon.ico',
+            template: './src/assets/template.ejs',
+            favicon: './src/assets/favicon.ico',
+            templateParameters: {
+                title: 'pxs',
+            },
         }),
     ],
     devServer: {

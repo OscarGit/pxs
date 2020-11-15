@@ -1,40 +1,28 @@
 import React from 'react';
 
-type ImageViewProps = {};
-type ImageViewState = {
-    current: 'loadImage' | 'viewImage';
+type ImageViewProps = {
+    data: ImageData;
 };
+type ImageViewState = {};
 export default class ImageView extends React.Component<ImageViewProps, ImageViewState> {
     _canvas?: HTMLCanvasElement;
+    _fileInput?: HTMLInputElement;
 
-    state: ImageViewState = {
-        current: 'loadImage',
-    };
+    state: ImageViewState = {};
 
-    loadImageClick($this: ImageView) {
-        // TODO: load image
-        $this.setState({
-            current: 'viewImage',
-        });
+    componentDidMount() {
+        this._canvas.width = this._canvas.clientWidth;
+        this._canvas.height = this._canvas.clientHeight;
+        const gc = this._canvas.getContext('2d');
+        gc.clearRect(0, 0, gc.canvas.width, gc.canvas.height);
+        gc.putImageData(this.props.data, 0, 0);
     }
     render() {
         return (
-            <div className="image-view-container">
-                {this.state.current == 'viewImage' ? (
-                    <canvas ref={(elem) => (this._canvas = elem)}></canvas>
-                ) : null}
-                {this.state.current == 'loadImage' ? (
-                    <div className="load-btn-container">
-                        <button
-                            id="load-btn"
-                            onClick={() => {
-                                this.loadImageClick(this);
-                            }}
-                        >
-                            Load image
-                        </button>
-                    </div>
-                ) : null}
+            <div className="container">
+                <canvas ref={(elem) => (this._canvas = elem)}>
+                    Your browser does not support HTML5 canvas.
+                </canvas>
             </div>
         );
     }
