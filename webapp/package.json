@@ -9,7 +9,6 @@
     "private": false,
     "scripts": {
         "build": "webpack",
-        "watch": "webpack --watch",
         "serve": "webpack serve"
     },
     "dependencies": {

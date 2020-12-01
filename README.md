@@ -1,0 +1,6 @@
+# pxs
+
+## Requirements
+
+- yarn
+  - nodejs
