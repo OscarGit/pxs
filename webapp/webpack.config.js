@@ -3,7 +3,9 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const outputPath = path.resolve(__dirname, 'dist');
 const srcPath = path.resolve(__dirname, 'src');
-const assetsPath = path.resolve(__dirname, 'src', 'assets');
+const assetsPath = path.resolve(srcPath, 'assets');
+const loadersPath = path.resolve(__dirname, 'loaders');
+const goLoader = path.resolve(loadersPath, 'go-loader.js');
 
 module.exports = {
     mode: 'development',
@@ -13,6 +15,7 @@ module.exports = {
         filename: 'bundle.js',
     },
     module: {
+        unknownContextCritical: false,
         rules: [
             {
                 test: /\.tsx?$/,
@@ -35,10 +38,24 @@ module.exports = {
                     },
                 ],
             },
+            {
+                test: /\.go$/,
+                include: srcPath,
+                use: goLoader,
+            },
         ],
     },
     resolve: {
-        extensions: ['.tsx', '.ts', '.js'],
+        extensions: ['.tsx', '.ts', '.js', '.go'],
+        fallback: {
+            crypto: false,
+            util: false,
+            fs: false,
+            os: false,
+        },
+    },
+    resolveLoader: {
+        modules: ['node_modules', loadersPath],
     },
     plugins: [
         new HtmlWebpackPlugin({

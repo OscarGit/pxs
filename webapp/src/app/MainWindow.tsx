@@ -1,8 +1,8 @@
 import React from 'react';
 
 import ImageView from './ImageView';
-import '../styles/global.scss';
 import FileSelect from './FileSelect';
+import '../styles/global.scss';
 
 type MainWindowProps = {};
 type MainWindowState = {

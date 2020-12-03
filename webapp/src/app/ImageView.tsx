@@ -1,5 +1,7 @@
 import React from 'react';
 
+import sorter from '../wasm/sorter.go';
+
 type ImageViewProps = {
     data: ImageData;
 };
@@ -10,12 +12,14 @@ export default class ImageView extends React.Component<ImageViewProps, ImageView
 
     state: ImageViewState = {};
 
-    componentDidMount() {
+    async componentDidMount() {
         this._canvas.width = this._canvas.clientWidth;
         this._canvas.height = this._canvas.clientHeight;
         const gc = this._canvas.getContext('2d');
         gc.clearRect(0, 0, gc.canvas.width, gc.canvas.height);
         gc.putImageData(this.props.data, 0, 0);
+
+        await sorter.sortImage(this.props.data.data);
     }
     render() {
         return (
