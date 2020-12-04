@@ -13,7 +13,6 @@ module.exports = {
         filename: 'bundle.js',
     },
     module: {
-        unknownContextCritical: false,
         rules: [
             {
                 test: /\.tsx?$/,
@@ -44,13 +43,7 @@ module.exports = {
         ],
     },
     resolve: {
-        extensions: ['.tsx', '.ts', '.js', '.go'],
-        fallback: {
-            crypto: false,
-            util: false,
-            fs: false,
-            os: false,
-        },
+        extensions: ['.tsx', '.ts', '.js'],
     },
     plugins: [
         new HtmlWebpackPlugin({
