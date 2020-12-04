@@ -4,8 +4,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const outputPath = path.resolve(__dirname, 'dist');
 const srcPath = path.resolve(__dirname, 'src');
 const assetsPath = path.resolve(srcPath, 'assets');
-const loadersPath = path.resolve(__dirname, 'loaders');
-const goLoader = path.resolve(loadersPath, 'go-loader.js');
 
 module.exports = {
     mode: 'development',
@@ -41,7 +39,7 @@ module.exports = {
             {
                 test: /\.go$/,
                 include: srcPath,
-                use: goLoader,
+                use: 'go-module-loader',
             },
         ],
     },
@@ -53,9 +51,6 @@ module.exports = {
             fs: false,
             os: false,
         },
-    },
-    resolveLoader: {
-        modules: ['node_modules', loadersPath],
     },
     plugins: [
         new HtmlWebpackPlugin({

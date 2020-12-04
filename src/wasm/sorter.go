@@ -1,11 +1,11 @@
 package main
 
 import (
-	"github.com/OscarGit/wasmbridge"
+	"github.com/opkna/wasmbridge"
 )
 
-// Add - Add two numbers
-func sortImage(args []interface{}) (interface{}, error) {
+// SortImage - Sort a image
+func SortImage(args []interface{}) (interface{}, error) {
 	data := args[0].([]byte)
 	return data, nil
 }
@@ -13,7 +13,7 @@ func sortImage(args []interface{}) (interface{}, error) {
 func main() {
 	c := make(chan struct{}, 0)
 
-	wasmbridge.ExportFunc("sortImage", sortImage)
+	wasmbridge.ExportFunc("sortImage", SortImage)
 
 	<-c
 }
