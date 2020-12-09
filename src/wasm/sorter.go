@@ -13,7 +13,7 @@ func SortImage(args []interface{}) (interface{}, error) {
 func main() {
 	c := make(chan struct{}, 0)
 
-	wasmbridge.ExportFunc("sortImage", SortImage)
+	wasmbridge.ExportFunc("sortImage", SortImage, true)
 
 	<-c
 }

@@ -1,4 +1,9 @@
 declare module '*.sass' {}
+
+interface WasmModule {
+    instantiate: <T>() => Promise<T>;
+}
 declare module '*.go' {
-    const sortImage: (data: Uint8ClampedArray) => Promise<Uint8ClampedArray>;
+    const content: WasmModule;
+    export default content;
 }
