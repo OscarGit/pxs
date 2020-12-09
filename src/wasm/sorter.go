@@ -7,6 +7,12 @@ import (
 // SortImage - Sort a image
 func SortImage(args []interface{}) (interface{}, error) {
 	data := args[0].([]byte)
+
+	for i := range data {
+		if (i/100)%2 == 0 {
+			data[i] = 0
+		}
+	}
 	return data, nil
 }
 

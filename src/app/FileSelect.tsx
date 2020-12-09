@@ -6,8 +6,8 @@ function isHTMLInputElement(elem: Element): elem is HTMLInputElement {
 
 async function getImageData(file: File) {
     return new Promise<ImageData>((resolve, reject) => {
-        const fileReader = new FileReader();
-        fileReader.onload = () => {
+        const fr = new FileReader();
+        fr.onload = () => {
             const img = new Image();
             img.onload = () => {
                 const canvasBuffer = document.createElement('canvas');
@@ -19,14 +19,14 @@ async function getImageData(file: File) {
                 canvasBuffer.remove();
                 resolve(imgData);
             };
-            const result = fileReader.result;
+            const result = fr.result;
             if (typeof result !== 'string') {
                 reject(new Error('FileReader result was not a string'));
             } else {
                 img.src = result;
             }
         };
-        fileReader.readAsDataURL(file);
+        fr.readAsDataURL(file);
     });
 }
 
