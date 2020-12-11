@@ -1,7 +1,5 @@
-$primary-color: #cf6766;
-$secondary-color: #30415d;
-$light-color: #8eaebd;
-$dark-color: #031424;
+@import './variables';
+@import './util';
 
 * {
     box-sizing: border-box;
@@ -83,4 +81,39 @@ canvas {
 #view-img {
     max-width: 100%;
     max-height: 100%;
+    width: 100%;
+}
+
+#control-panel {
+    @include flex-container;
+    flex-direction: column;
+    flex-grow: 4;
+    max-width: 25rem;
+    background-color: $light-color;
+}
+
+#controls-container {
+    @include flex-container;
+    flex-direction: column;
+}
+
+.input-container {
+}
+
+#sort-btn {
+    outline: 0;
+    border: 0;
+    border-radius: 0;
+
+    padding: 0.5rem 2rem;
+    line-height: 4rem;
+    font-size: 2rem;
+
+    background-color: $primary-color;
+    color: $dark-color;
+
+    &:hover {
+        background-color: $dark-color;
+        color: $primary-color;
+    }
 }
