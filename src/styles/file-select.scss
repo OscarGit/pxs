@@ -1,0 +1,30 @@
+@import 'variables';
+@import 'util';
+
+#load-btn-container {
+    @include fill-space;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#load-btn {
+    outline: 0;
+    border: 0;
+    border-radius: 0;
+
+    padding: 0.5rem 2rem;
+    line-height: 4rem;
+
+    background-color: $primary-color;
+    color: $darker-color;
+
+    &:hover {
+        background-color: $darker-color;
+        color: $primary-color;
+    }
+}
+
+#file-input {
+    display: none;
+}

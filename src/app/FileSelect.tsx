@@ -1,5 +1,7 @@
 import React, { ChangeEvent } from 'react';
 
+import '../styles/file-select.scss';
+
 function isHTMLInputElement(elem: Element): elem is HTMLInputElement {
     return elem.constructor.name == 'HTMLInputElement';
 }
@@ -70,7 +72,7 @@ export default class FileSelect extends React.Component<FileSelectProps, FileSel
                 />
                 <button
                     id="load-btn"
-                    className="psx-font"
+                    className="pxs pxs-large"
                     onClick={() => {
                         this._fileInput.click();
                     }}

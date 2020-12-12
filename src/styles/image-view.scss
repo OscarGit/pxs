@@ -1,0 +1,15 @@
+@import 'variables';
+@import 'util';
+
+#view-container {
+    @include fill-space;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: $black;
+}
+
+#view-img {
+    max-width: 100%;
+    max-height: 100%;
+}

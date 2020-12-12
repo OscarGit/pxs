@@ -56,7 +56,7 @@ export default class MainWindow extends React.Component<MainWindowProps, MainWin
         const imgData = this.state.sortedData ?? this.state.data ?? null;
         const haveImage = !!imgData;
         return (
-            <div className="container">
+            <div id="main-window-container">
                 {haveImage ? (
                     <ImageView data={imgData} />
                 ) : (

@@ -3,6 +3,7 @@
         "noImplicitAny": true,
         "module": "ES2015",
         "allowSyntheticDefaultImports": true,
+        "moduleResolution": "node",
         "allowJs": true,
         "jsx": "react"
     },

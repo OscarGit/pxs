@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/opkna/wasmbridge"
 )
 
@@ -138,6 +140,7 @@ func SortImage(args []interface{}) (interface{}, error) {
 	pixels := bytesToPixels(data)
 
 	if vertical {
+		fmt.Println("horizontal")
 		for x := 0; x < width; x++ {
 			quickSortVertical(pixels, x, x+(height-1)*width, width, desc)
 		}

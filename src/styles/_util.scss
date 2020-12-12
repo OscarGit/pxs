@@ -1,57 +1,28 @@
-@mixin animation-name($name) {
-    animation-name: $name;
-    -webkit-animation-name: $name;
-    -moz-animation-name: $name;
-    -ms-animation-name: $name;
+@mixin fill-space {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+}
+@mixin prefix($value, $property, $prefixes) {
+    #{$property}: $value;
+    @each $prefix in $prefixes {
+        -#{$prefix}-#{$property}: $value;
+    }
 }
 
-@mixin animation-duration($duration) {
-    animation-duration: $duration;
-    -webkit-animation-duration: $duration;
-    -moz-animation-duration: $duration;
-    -ms-animation-duration: $duration;
+@mixin animation($name, $duration, $timingfunc) {
+    @include prefix($name, animation-name, (webkit, moz, ms));
+    @include prefix($duration, animation-duration, (webkit, moz, ms));
+    @include prefix($timingfunc, animation-timing-function, (webkit, moz, ms));
 }
 
-@mixin animation-timing-function($func) {
-    animation-timing-function: $func;
-    -webkit-animation-timing-function: $func;
-    -moz-animation-timing-function: $func;
-    -ms-animation-timing-function: $func;
-}
-
-@mixin animation($name, $duration, $timing-func) {
-    @include animation-name($name);
-    @include animation-duration($duration);
-    @include animation-timing-function($timing-func);
-}
-
-@mixin transition-property($property) {
-    transition-property: $property;
-    -webkit-transition-property: $property;
-    -moz-transition-property: $property;
-    -ms-transition-property: $property;
-}
-@mixin transition-duration($duration) {
-    transition-duration: $duration;
-    -webkit-transition-duration: $duration;
-    -moz-transition-duration: $duration;
-    -ms-transition-duration: $duration;
-}
-@mixin transition-timing-function($timingfunc) {
-    transition-timing-function: $timingfunc;
-    -webkit-transition-timing-function: $timingfunc;
-    -moz-transition-timing-function: $timingfunc;
-    -ms-transition-timing-function: $timingfunc;
-}
-@mixin transition-delay($delay) {
-    transition-delay: $delay;
-    -webkit-transition-delay: $delay;
-    -moz-transition-delay: $delay;
-    -ms-transition-delay: $delay;
-}
 @mixin transition($property, $duration, $timingfunc, $delay) {
-    @include transition-property($property);
-    @include transition-duration($duration);
-    @include transition-timing-function($timingfunc);
-    @include transition-delay($delay);
+    @include prefix($property, transition-property, (webkit, moz, ms));
+    @include prefix($duration, transition-duration, (webkit, moz, ms));
+    @include prefix($timingfunc, transition-timing-function, (webkit, moz, ms));
+    @include prefix($delay, transition-delay, (webkit, moz, ms));
+}
+
+@mixin noselect {
+    @include prefix(none, user-select, (webkit, moz, ms));
 }

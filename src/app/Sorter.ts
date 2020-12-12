@@ -1,11 +1,14 @@
 import sorterModule from '../wasm/sorter.go';
 
-export interface SortOptions {
+export type ColorAttribute = 'raw' | 'brightness' | 'saturation' | 'hue';
+export type SortOptions = {
+    attribute: ColorAttribute;
+    invert: boolean;
     desc: boolean;
     direction: 'vertical' | 'horizontal';
     lowerRange: number;
     upperRange: number;
-}
+};
 export interface Sorter {
     sortImage: (
         data: Uint8ClampedArray,

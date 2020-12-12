@@ -1,0 +1,163 @@
+@import './variables';
+@import './util';
+
+$input-height: 3rem;
+
+#control-panel {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 4;
+    min-width: 25rem;
+    background-color: $darkest-color;
+}
+
+#controls-container {
+    @include fill-space;
+    display: flex;
+    flex-direction: column;
+
+    .control-group:nth-child(n + 2) {
+        margin-top: 1rem;
+    }
+}
+
+.control-group {
+    width: 100%;
+    padding: {
+        left: 1rem;
+        top: 0.2rem;
+        bottom: 0.2rem;
+    }
+    margin-bottom: 1rem;
+    background-color: $dark-color;
+    color: $darkest-color;
+}
+
+.input-label {
+    color: $secondary-color;
+    padding-left: 1.4rem;
+}
+
+.input-container {
+    display: flex;
+    align-items: center;
+    height: $input-height;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    margin-bottom: 1rem;
+
+    label {
+        color: $secondary-color;
+    }
+}
+
+#sort-btn {
+    outline: 0;
+    border: 0;
+    border-radius: 0;
+
+    padding: 1rem 2rem;
+
+    background-color: $dark-color;
+    color: $primary-color;
+
+    &:hover {
+        background-color: $darker-color;
+        color: $primary-color;
+    }
+}
+
+.dropdown {
+    height: 100%;
+    width: 100%;
+
+    .dropdown-btn {
+        @include noselect;
+        display: flex;
+        align-items: center;
+        background-color: $dark-color;
+        color: $secondary-color;
+        height: 100%;
+        padding: {
+            left: 1rem;
+        }
+        cursor: pointer;
+        &:hover {
+            background-color: $darker-color;
+        }
+    }
+
+    .dropdown-container {
+        position: relative;
+        z-index: 999;
+        background-color: $dark-color;
+    }
+
+    .dropdown-option {
+        color: $secondary-color;
+        padding: {
+            left: 1rem;
+            top: 0.4rem;
+            bottom: 0.4rem;
+        }
+        cursor: pointer;
+
+        &:hover {
+            background-color: $darker-color;
+        }
+    }
+}
+
+.checkbox-container {
+    position: relative;
+    padding-top: 1px;
+    padding-left: 2.5rem;
+    padding-right: 1.5rem;
+    height: 2rem;
+    width: 100%;
+    cursor: pointer;
+
+    input {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+        cursor: none;
+    }
+
+    .checkmark {
+        position: absolute;
+        top: 0.3rem;
+        left: 0.7rem;
+        height: 1.4rem;
+        width: 1.4rem;
+        background-color: $dark-color;
+        border: 3px solid $secondary-color;
+    }
+
+    &:hover input ~ .checkmark {
+        border: 3px solid $dark-color;
+        background-color: $darker-color;
+    }
+
+    .checkmark:after {
+        content: '';
+        position: absolute;
+        display: none;
+    }
+    input:checked ~ .checkmark:after {
+        display: block;
+    }
+    .checkmark:after {
+        left: 4px;
+        right: 4px;
+        top: 4px;
+        bottom: 4px;
+        background-color: $secondary-color;
+    }
+}
+
+.slider {
+    overflow: hidden;
+    height: 100%;
+}

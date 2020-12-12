@@ -1,5 +1,7 @@
 import React from 'react';
 
+import '../styles/image-view.scss';
+
 type ImageViewProps = {
     data: ImageData;
 };
