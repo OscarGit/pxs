@@ -2,18 +2,20 @@ import sorterModule from '../wasm/sorter.go';
 
 export type ColorAttribute = 'raw' | 'brightness' | 'saturation' | 'hue';
 export type SortOptions = {
-    attribute: ColorAttribute;
+    selectBy: ColorAttribute;
     invert: boolean;
-    desc: boolean;
-    direction: 'vertical' | 'horizontal';
     lowerRange: number;
     upperRange: number;
+    desc: boolean;
+    direction: 'vertical' | 'horizontal';
+    sortBy: ColorAttribute;
 };
 export interface Sorter {
     sortImage: (
         data: Uint8ClampedArray,
         width: number,
         height: number,
+        bpp: number,
         options: SortOptions
     ) => Promise<Uint8ClampedArray>;
 }

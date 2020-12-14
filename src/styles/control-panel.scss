@@ -51,6 +51,21 @@ $input-height: 3rem;
     }
 }
 
+.actions-container {
+    display: flex;
+    justify-content: space-evenly;
+    padding: 0.5rem;
+
+    button {
+        padding: 0.3rem 0.8rem;
+        color: $secondary-color;
+        background-color: $darker-color;
+        border: none;
+        outline: none;
+        cursor: pointer;
+    }
+}
+
 #sort-btn {
     outline: 0;
     border: 0;

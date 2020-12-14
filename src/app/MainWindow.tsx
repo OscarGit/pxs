@@ -6,6 +6,8 @@ import FileSelect from './FileSelect';
 import ControlPanel from './ControlPanel';
 import { instantiateSorter, Sorter, SortOptions } from './Sorter';
 
+const BPP = 4;
+
 type MainWindowProps = {};
 type MainWindowState = {
     data?: ImageData;
@@ -14,6 +16,8 @@ type MainWindowState = {
 
 export default class MainWindow extends React.Component<MainWindowProps, MainWindowState> {
     _sorter: Sorter;
+    _getDataUrl: () => string;
+    _saveId = 1;
     state: MainWindowState = {};
 
     async componentDidMount() {
@@ -28,6 +32,7 @@ export default class MainWindow extends React.Component<MainWindowProps, MainWin
                 imgData.data,
                 imgData.width,
                 imgData.height,
+                BPP,
                 options
             );
             const sortedImage: ImageData = new ImageData(sortedData, imgData.width, imgData.height);
@@ -35,6 +40,19 @@ export default class MainWindow extends React.Component<MainWindowProps, MainWin
         } catch (err) {
             console.error(err);
         }
+    }
+
+    async saveImage() {
+        const dataUrl = this._getDataUrl();
+        if (!dataUrl) {
+            console.error('Could not get data url');
+            return;
+        }
+        const a = document.createElement('a');
+        a.href = dataUrl;
+        a.download = 'sorted.jpg';
+        a.click();
+        a.remove();
     }
 
     getExampleImg() {
@@ -58,11 +76,21 @@ export default class MainWindow extends React.Component<MainWindowProps, MainWin
         return (
             <div id="main-window-container">
                 {haveImage ? (
-                    <ImageView data={imgData} />
+                    <ImageView
+                        data={imgData}
+                        setGetUrl={(getUrl) => {
+                            this._getDataUrl = getUrl;
+                        }}
+                    />
                 ) : (
                     <FileSelect onFileLoaded={(data) => void this.setState({ data })} />
                 )}
-                {haveImage ? <ControlPanel onSortImage={this.sortImage.bind(this)} /> : null}
+                {haveImage ? (
+                    <ControlPanel
+                        onSortImage={this.sortImage.bind(this)}
+                        onSaveImage={this.saveImage.bind(this)}
+                    />
+                ) : null}
             </div>
         );
     }

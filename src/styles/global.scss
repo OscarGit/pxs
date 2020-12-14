@@ -6,10 +6,6 @@
 }
 
 @font-face {
-    font-family: 'Forced Square';
-    src: url(../assets/forced_square.ttf);
-}
-@font-face {
     font-family: 'TitilliumWeb';
     src: url(../assets/titillium_web_semibold.ttf);
     font-weight: bold;
@@ -46,7 +42,7 @@ body,
 }
 
 #root {
-    background-color: $black;
+    background-color: $darkest-color;
 }
 
 #main-window-container {

@@ -4,6 +4,7 @@ import '../styles/image-view.scss';
 
 type ImageViewProps = {
     data: ImageData;
+    setGetUrl: (getUrl: () => string) => void;
 };
 type ImageViewState = {
     dataUrl?: string;
@@ -13,6 +14,14 @@ export default class ImageView extends React.Component<ImageViewProps, ImageView
     _prevData: ImageData;
 
     state: ImageViewState = {};
+
+    constructor(props: ImageViewProps) {
+        super(props);
+
+        props.setGetUrl(() => {
+            return this.state.dataUrl;
+        });
+    }
 
     async componentDidMount() {
         this._internalCanvas = document.createElement('canvas');

@@ -108,6 +108,7 @@ function renderSlider(
 type SliderProps = {
     invert: boolean;
     type: ColorAttribute;
+    onChange?: (sliderA: number, sliderB: number) => void;
 };
 type SliderState = {
     sliderA: number;
@@ -178,6 +179,10 @@ export default class Slider extends React.Component<SliderProps, SliderState> {
         } else if (this._mouseOn === 'B') {
             let newB = this.state.sliderB + evt.movementX / bW;
             this.setState({ sliderB: Math.max(this.state.sliderA, Math.min(newB, 1)) });
+        }
+
+        if (this._mouseOn && this.props.onChange) {
+            this.props.onChange(this.state.sliderA, this.state.sliderB);
         }
     }
 

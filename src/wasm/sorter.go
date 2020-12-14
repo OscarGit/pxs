@@ -1,178 +1,220 @@
 package main
 
 import (
+	"errors"
 	"fmt"
+	"math"
 
 	"github.com/opkna/wasmbridge"
 )
 
-func quickSort(data []uint32, start, end int, desc bool) {
+func quickSort(data []byte, bpp, start, end int, desc bool) {
 	if start >= end {
 		return
 	}
 
-	pivot := data[(start+end)/2]
+	pivot := data[((start+end)/(2*bpp))*bpp]
 	l, r := start, end
 	for l < r {
 		if desc {
 			if data[l] < data[r] {
-				s1, s2 := data[l], data[r]
-				data[l] = s2
-				data[r] = s1
+				for i := 0; i < bpp; i++ {
+					tmp := data[l+i]
+					data[l+i] = data[r+i]
+					data[r+i] = tmp
+				}
 			}
 
 			if data[l] >= pivot {
-				l++
+				l += bpp
 			}
 			if data[r] < pivot {
-				r--
+				r -= bpp
 			}
 		} else {
 			if data[l] > data[r] {
-				s1, s2 := data[l], data[r]
-				data[l] = s2
-				data[r] = s1
+				for i := 0; i < bpp; i++ {
+					tmp := data[l+i]
+					data[l+i] = data[r+i]
+					data[r+i] = tmp
+				}
 			}
 
 			if data[l] <= pivot {
-				l++
+				l += bpp
 			}
 			if data[r] > pivot {
-				r--
+				r -= bpp
 			}
 		}
 	}
-	quickSort(data, start, r-1, desc)
-	quickSort(data, r+1, end, desc)
+	quickSort(data, bpp, start, r-bpp, desc)
+	quickSort(data, bpp, r+bpp, end, desc)
 }
 
-func quickSortVertical(data []uint32, start, end, w int, desc bool) {
-	if start >= end {
-		return
-	}
-
-	m := start + ((end-start)/(2*w))*w
-	pivot := data[m]
-	l, r := start, end
-	for l < r {
-		if desc {
-			if data[l] < data[r] {
-				p1, p2 := data[l], data[r]
-				data[l] = p2
-				data[r] = p1
-			}
-			if data[l] >= pivot {
-				l += w
-			}
-			if data[r] < pivot {
-				r -= w
-			}
-
-		} else {
-			if data[l] > data[r] {
-				p1, p2 := data[l], data[r]
-				data[l] = p2
-				data[r] = p1
-			}
-			if data[l] <= pivot {
-				l += w
-			}
-			if data[r] > pivot {
-				r -= w
-			}
-		}
-	}
-
-	quickSortVertical(data, start, r-w, w, desc)
-	quickSortVertical(data, r+w, end, w, desc)
-}
-
-func calcLumin(data []byte, i int) float64 {
+func calcLumin(data []byte, i int) float32 {
 	sum := int(data[i]) + int(data[i+1]) + int(data[i+2])
-	return float64(sum) / 765
+	return float32(sum) / 765
+}
+func calcSaturation(data []byte, i int) float32 {
+	s := 1.0 / 255.0
+	r, g, b := float64(data[i])*s, float64(data[i+1])*s, float64(data[i+2])*s
+	max := math.Max(r, math.Max(g, b))
+	min := math.Min(r, math.Min(g, b))
+	if max == min {
+		return 0
+	}
+	if (max + min) > 1 {
+		return float32((max - min) / (2 - max - min))
+	}
+	return float32((max - min) / (max + min))
+}
+func calcHue(data []byte, i int) float32 {
+	scale := 1.0 / 255.0
+	r, g, b := float64(data[i])*scale, float64(data[i+1])*scale, float64(data[i+2])*scale
+	max := math.Max(r, math.Max(g, b))
+	min := math.Min(r, math.Min(g, b))
+	if r == max {
+		return float32(((g - b) / (max - min)) / 6)
+	} else if g == max {
+		return float32((2 + (b-r)/(max-min)) / 6)
+	}
+	return float32((4 + (r-g)/(max-min)) / 6)
+}
+func calcRaw(data []byte, i int) float32 {
+	sum := (uint32(data[i]) << 16) | (uint32(data[i+1]) << 8) | uint32(data[i+2])
+	return float32(sum) / 16777215 // 256^3
 }
 
-func bytesToPixels(b []byte) []uint32 {
-	length := len(b)
-	pixels := make([]uint32, length/4)
-	for i := 0; i < length; i += 4 {
-		pixels[i/4] = uint32(b[i]) | uint32(b[i+1])<<8 | uint32(b[i+2])<<16 | uint32(b[i+3])<<24
-	}
-	return pixels
+func getOptions(options map[string]interface{}) (string, bool, float32, float32, bool, string, string) {
+	return options["selectBy"].(string), // How to select pixels to sort (brightness, saturation, hue, raw)
+		options["invert"].(bool), // Inverting the range
+		float32(options["lowerRange"].(float64)), // Lower bounds of range
+		float32(options["upperRange"].(float64)), // Upper bounds of range
+		options["desc"].(bool), // Sorting descending
+		options["direction"].(string), // Direction of sort (horizontal/vertical)
+		options["sortBy"].(string) // Value to sort by (brightness, saturation, hue, raw)
 }
 
-func pixelsToBytes(pixels []uint32) []byte {
-	length := len(pixels)
-	data := make([]byte, length*4)
-	for i := 0; i < length; i++ {
-		p := i * 4
-		data[p] = byte(pixels[i])
-		data[p+1] = byte(pixels[i] >> 8)
-		data[p+2] = byte(pixels[i] >> 16)
-		data[p+3] = byte(pixels[i] >> 24)
-	}
-	return data
-}
-func pivotPixels(pixels []uint32, width, height int) []uint32 {
-	pivot := make([]uint32, width*height)
-	i := 0
-	for y := 0; y < height; y++ {
-		for x := 0; x < width; x++ {
-			pivot[y+x*height] = pixels[i]
-			i++
+func sortRow(data []byte, width, bpp int, desc bool, inRange func([]byte, int) bool) {
+	firstX := -1
+	for i := 0; i < width; i += bpp {
+		if inRange(data, i) {
+			if firstX == -1 {
+				firstX = i
+			}
+		} else {
+			if firstX != -1 {
+				lastX := i - bpp
+				// Sort
+				quickSort(data, bpp, firstX, lastX, desc)
+				firstX = -1
+			}
 		}
 	}
-	return pivot
+	if firstX != -1 {
+		lastX := width - bpp
+		// Sort
+		quickSort(data, bpp, firstX, lastX, desc)
+	}
 }
 
 // SortImage - Sort a image
 func SortImage(args []interface{}) (interface{}, error) {
-	data := args[0].([]byte)
-	width := int(args[1].(float64))
-	height := int(args[2].(float64))
-	options := args[3].(map[string]interface{})
+	data := args[0].([]byte)                    // Pixel data in bytes
+	width := int(args[1].(float64))             // Width in pixels
+	height := int(args[2].(float64))            // Height in pixels
+	bpp := int(args[3].(float64))               // Bytes per pixel
+	options := args[4].(map[string]interface{}) // Soring options
 
-	desc := options["desc"].(bool)
-	vertical := options["direction"].(string) != "horizontal"
-	lowerRange := options["lowerRange"].(float64)
-	upperRange := options["upperRange"].(float64)
+	if len(data) != width*height*bpp {
+		return nil, errors.New("Mismatch between data length and width/height")
+	}
 
-	pixels := bytesToPixels(data)
+	selectBy, invert, lowerRange, upperRange, desc, direction, sortBy := getOptions(options)
 
-	if vertical {
-		fmt.Println("horizontal")
-		for x := 0; x < width; x++ {
-			quickSortVertical(pixels, x, x+(height-1)*width, width, desc)
+	// True if sort direction is horizontal
+	horizontal := direction == "horizontal"
+
+	// Set function that will be used to get the value used to select pixels
+	var getValue func([]byte, int) float32
+	switch selectBy {
+	case "brightness":
+		getValue = calcLumin
+	case "saturation":
+		getValue = calcSaturation
+	case "hue":
+		getValue = calcHue
+	case "raw":
+		getValue = calcRaw
+	default:
+		return nil, fmt.Errorf("Unknown 'selectBy' value: %s", selectBy)
+	}
+	inRange := func(data []byte, i int) bool {
+		v := getValue(data, i)
+		if invert {
+			return v <= lowerRange || v >= upperRange
 		}
-	} else {
-		num := len(pixels)
-		for i := 0; i < num; i += width {
-			firstX := -1
-			var x int
-			for x = 0; x < width; x++ {
-				v := calcLumin(data, (i+x)*4)
-				if v >= lowerRange && v <= upperRange {
-					if firstX == -1 {
-						firstX = i + x
-					}
-				} else {
-					if firstX != -1 {
-						lastX := i + x - 1
-						// Sort
-						quickSort(pixels, firstX, lastX, desc)
-						firstX = -1
-					}
-				}
+		return v >= lowerRange && v <= upperRange
+	}
+
+	switch sortBy {
+	default:
+		break
+	}
+
+	// Get all rows to be sorted as separet slices
+	var rows [][]byte
+	var rowSize int
+	if horizontal {
+		// Get all the rows
+		rowSize = width * bpp
+		rows = make([][]byte, height)
+		for r := range rows {
+			rows[r] = make([]byte, width*bpp)
+			for x := range rows[r] {
+				rows[r][x] = data[r*width*bpp+x]
 			}
-			if firstX != -1 {
-				lastX := i + x - 1
-				// Sort
-				quickSort(pixels, firstX, lastX, desc)
+		}
+	} else { // Vertical
+		// Convert colums to rows
+		rowSize = height * bpp
+		rows = make([][]byte, width)
+		for c := range rows {
+			rows[c] = make([]byte, rowSize)
+			for y := 0; y < rowSize; y += bpp {
+				i := c*bpp + y*width
+				for d := 0; d < bpp; d++ {
+					rows[c][y+d] = data[i+d]
+				}
 			}
 		}
 	}
 
-	data = pixelsToBytes(pixels)
+	for i := range rows {
+		_, _, _, _ = rowSize, i, desc, inRange
+		sortRow(rows[i], rowSize, bpp, desc, inRange)
+	}
+
+	// Copy back the sorted pixels to the data slice
+	if horizontal {
+		i := 0
+		for y := range rows {
+			for x := range rows[y] {
+				data[i] = rows[y][x]
+				i++
+			}
+		}
+	} else { // Vertical
+		for x := 0; x < width; x++ {
+			for y := 0; y < height*bpp; y += bpp {
+				i := x*bpp + y*width
+				for d := 0; d < bpp; d++ {
+					data[i+d] = rows[x][y+d]
+				}
+			}
+		}
+	}
 
 	return data, nil
 }

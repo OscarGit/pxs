@@ -7,6 +7,7 @@ import Slider from './elements/Slider';
 import { ColorAttribute, SortOptions } from './Sorter';
 
 type ControlId = 'selection-type' | 'threshold' | 'dir-checkbox';
+type ActionId = 'save' | 'discard' | 'reset';
 
 const colorAttributes: { value: ColorAttribute; display: string }[] = [
     {
@@ -28,16 +29,18 @@ const colorAttributes: { value: ColorAttribute; display: string }[] = [
 ];
 
 const defaultOptions: SortOptions = {
-    attribute: 'brightness',
+    selectBy: 'brightness',
     invert: false,
-    desc: false,
-    direction: 'horizontal',
     lowerRange: 0,
     upperRange: 0.5,
+    desc: false,
+    direction: 'horizontal',
+    sortBy: 'brightness',
 };
 
 type ControlPanelProps = {
     onSortImage: (options: SortOptions) => void;
+    onSaveImage: () => void;
 };
 type ControlPanelState = {};
 export default class ControlPanel extends React.Component<ControlPanelProps, ControlPanelState> {
@@ -57,16 +60,20 @@ export default class ControlPanel extends React.Component<ControlPanelProps, Con
         this.props.onSortImage(this._options);
     }
 
-    onChangeSelectAttr(value: ColorAttribute) {
-        this._options.attribute = value;
+    onChangeSelectBy(value: ColorAttribute) {
+        this._options.selectBy = value;
         this.forceUpdate();
     }
-    onChangeFlip(checked: boolean) {
+    onChangeInvert(checked: boolean) {
         this._options.invert = checked;
         this.forceUpdate();
     }
-    onChangeSortAttr(value: ColorAttribute) {
-        this._options.attribute = value;
+    onChangeRange(sliderA: number, sliderB: number) {
+        this._options.lowerRange = sliderA;
+        this._options.upperRange = sliderB;
+    }
+    onChangeSortBy(value: ColorAttribute) {
+        this._options.sortBy = value;
     }
 
     onChangeOrder(desc: boolean) {
@@ -91,6 +98,21 @@ export default class ControlPanel extends React.Component<ControlPanelProps, Con
         }
     }
 
+    onClickAction(action: ActionId) {
+        switch (action) {
+            case 'save':
+                if (this.props.onSaveImage) this.props.onSaveImage();
+                break;
+            case 'discard':
+                break;
+            case 'reset':
+                break;
+            default:
+                console.error(`Unknown action: ${action}`);
+                break;
+        }
+    }
+
     render() {
         return (
             <div id="control-panel">
@@ -101,16 +123,20 @@ export default class ControlPanel extends React.Component<ControlPanelProps, Con
                         {/* Select attribute */}
                         <Dropdown
                             options={colorAttributes}
-                            onChange={this.onChangeSelectAttr.bind(this)}
+                            onChange={this.onChangeSelectBy.bind(this)}
                         />
                     </div>
                     <label className="input-label pxs pxs-small">Threshold</label>
                     <div className="input-container">
                         {/* Threshold */}
                         <div>
-                            <Checkbox text="Flip" onChange={this.onChangeFlip.bind(this)} />
+                            <Checkbox text="Flip" onChange={this.onChangeInvert.bind(this)} />
                         </div>
-                        <Slider invert={this._options.invert} type={this._options.attribute} />
+                        <Slider
+                            invert={this._options.invert}
+                            type={this._options.selectBy}
+                            onChange={this.onChangeRange.bind(this)}
+                        />
                     </div>
                     <div className="control-group pxs pxs-medium">Sorting</div>
                     <div className="input-container">
@@ -134,9 +160,29 @@ export default class ControlPanel extends React.Component<ControlPanelProps, Con
                         {/* Sort attibute */}
                         <Dropdown
                             options={colorAttributes}
-                            onChange={this.onChangeSortAttr.bind(this)}
+                            onChange={this.onChangeSortBy.bind(this)}
                         />
                     </div>
+                </div>
+                <div className="actions-container">
+                    <button
+                        className="pxs pxs-small"
+                        onClick={() => this.onClickAction.bind(this)('save')}
+                    >
+                        Save
+                    </button>
+                    <button
+                        className="pxs pxs-small"
+                        onClick={() => this.onClickAction.bind(this)('discard')}
+                    >
+                        Discard
+                    </button>
+                    <button
+                        className="pxs pxs-small"
+                        onClick={() => this.onClickAction.bind(this)('reset')}
+                    >
+                        Reset
+                    </button>
                 </div>
                 <button
                     id="sort-btn"
