@@ -96,7 +96,7 @@ func getOptions(options map[string]interface{}) (string, bool, float32, float32,
 		options["sortBy"].(string) // Value to sort by (brightness, saturation, hue, raw)
 }
 
-func sortRow(data []byte, width, bpp int, desc bool, inRange func([]byte, int) bool) {
+func sortRow(data []byte, width, bpp int, desc bool, inRange func([]byte, int) bool, getValue func([]byte, int) float32) {
 	firstX := -1
 	for i := 0; i < width; i += bpp {
 		if inRange(data, i) {
@@ -119,6 +119,36 @@ func sortRow(data []byte, width, bpp int, desc bool, inRange func([]byte, int) b
 	}
 }
 
+func getDataRows(data []byte, width, height, bpp int, horizontal bool) [][]byte {
+	// Get all rows to be sorted as separet slices
+	var rows [][]byte
+	if horizontal {
+		// Get all the rows
+		length := width * bpp
+		rows = make([][]byte, height)
+		for r := range rows {
+			rows[r] = make([]byte, length)
+			for x := range rows[r] {
+				rows[r][x] = data[r*length+x]
+			}
+		}
+	} else { // Vertical
+		// Convert colums to rows
+		length := height * bpp
+		rows = make([][]byte, width)
+		for c := range rows {
+			rows[c] = make([]byte, length)
+			for y := 0; y < length; y += bpp {
+				i := c*bpp + y*width
+				for d := 0; d < bpp; d++ {
+					rows[c][y+d] = data[i+d]
+				}
+			}
+		}
+	}
+	return rows
+}
+
 // SortImage - Sort a image
 func SortImage(args []interface{}) (interface{}, error) {
 	data := args[0].([]byte)                    // Pixel data in bytes
@@ -137,30 +167,42 @@ func SortImage(args []interface{}) (interface{}, error) {
 	horizontal := direction == "horizontal"
 
 	// Set function that will be used to get the value used to select pixels
-	var getValue func([]byte, int) float32
+	var getSelectValue func([]byte, int) float32
 	switch selectBy {
 	case "brightness":
-		getValue = calcLumin
+		getSelectValue = calcLumin
 	case "saturation":
-		getValue = calcSaturation
+		getSelectValue = calcSaturation
 	case "hue":
-		getValue = calcHue
+		getSelectValue = calcHue
 	case "raw":
-		getValue = calcRaw
+		getSelectValue = calcRaw
 	default:
 		return nil, fmt.Errorf("Unknown 'selectBy' value: %s", selectBy)
 	}
+
+	// Create function that determines if a pixel is in range
 	inRange := func(data []byte, i int) bool {
-		v := getValue(data, i)
+		v := getSelectValue(data, i)
 		if invert {
 			return v <= lowerRange || v >= upperRange
 		}
 		return v >= lowerRange && v <= upperRange
 	}
 
+	// Set function that will be used to get the value used to sort pixels
+	var getSortValue func([]byte, int) float32
 	switch sortBy {
+	case "brightness":
+		getSortValue = calcLumin
+	case "saturation":
+		getSortValue = calcSaturation
+	case "hue":
+		getSortValue = calcHue
+	case "raw":
+		getSortValue = calcRaw
 	default:
-		break
+		return nil, fmt.Errorf("Unknown 'sortBy' value: %s", selectBy)
 	}
 
 	// Get all rows to be sorted as separet slices
@@ -192,8 +234,7 @@ func SortImage(args []interface{}) (interface{}, error) {
 	}
 
 	for i := range rows {
-		_, _, _, _ = rowSize, i, desc, inRange
-		sortRow(rows[i], rowSize, bpp, desc, inRange)
+		sortRow(rows[i], rowSize, bpp, desc, inRange, getSortValue)
 	}
 
 	// Copy back the sorted pixels to the data slice
