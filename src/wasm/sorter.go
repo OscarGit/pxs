@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/opkna/wasmbridge"
+	"github.com/opkna/jsbridge"
 )
 
 func quickSort(data []byte, bpp, start, end int, desc bool) {
@@ -261,7 +261,7 @@ func SortImage(args []interface{}) (interface{}, error) {
 }
 
 func main() {
-	wasmbridge.ExportFunc("sortImage", SortImage, true)
+	jsbridge.ExportFunc("sortImage", SortImage, true)
 
 	select {}
 }
