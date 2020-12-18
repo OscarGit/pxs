@@ -3,7 +3,7 @@
     "version": "0.0.1",
     "description": "Pixelsorter web app",
     "main": "src/index.tsx",
-    "repository": "https://github.com/OscarGit/pxs.git",
+    "repository": "https://github.com/opkna/pxs.git",
     "author": "Oscar Persson <oscar.persson1993@gmail.com>",
     "license": "MIT",
     "private": false,
